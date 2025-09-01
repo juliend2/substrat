@@ -23,11 +23,7 @@ class BlockTest extends TestCase
 	protected $template, $content;
 
 	function setup():void {
-		$this->template = "
-			<div>
-				{{ test.test.pass }}
-			</div>
-		";
+		$this->template = "";
 		$this->content = [
 			"test" => [
 				"test"=>[
@@ -37,17 +33,57 @@ class BlockTest extends TestCase
 		];
 	}
 
-	function testBlockReplacement()
+	function testOneBlockReplacement()
 	{
 		$substrat = new Substrat(
-			$this->template,
-			$this->content
+			"
+			<div>
+				{{ test.test.pass }}
+			</div>
+			",
+			[
+				"test" => [
+					"test"=>[
+						"pass"=>"Pass"
+					]
+				]
+			]
 		);
 
 		$this->assertEquals(
 			normalizeHtmlWhitespace("
 			 <div>
 				 Pass
+			 </div>"),
+			normalizeHtmlWhitespace($substrat->replaceAll())
+		);
+	}
+
+
+	function testManyBlockReplacements()
+	{
+		$substrat = new Substrat(
+			"
+			<div>
+				{{ test.test.one }}
+				<br>
+				{{ test.test.two }}
+			</div>
+			",
+			[
+				"test" => [
+					"test"=>[
+						"one"=>"One",
+						"two"=>"Two",
+					]
+				]
+			]
+		);
+
+		$this->assertEquals(
+			normalizeHtmlWhitespace("
+			 <div>
+				 One<br>Two
 			 </div>"),
 			normalizeHtmlWhitespace($substrat->replaceAll())
 		);

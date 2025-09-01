@@ -3,8 +3,8 @@
 namespace Julien\Substrat;
 
 class Substrat {
-  protected $template;
-  protected $data;
+	protected $template;
+	protected $data;
 
 	function __construct($template, $data) {
 		$this->template = $template;
@@ -16,8 +16,10 @@ class Substrat {
 		if (empty($tags)) {
 			throw new \Exception("No tag found in template.");
 		}
-		// TODO: validate format
 		list($from, $to) = explode('-', array_keys($tags)[0]);
+		if (is_null($to)) {
+			throw new \Exception("Invalid character range");
+		}
 		return $this->replaceRange($this->template, explode(':', $from), explode(':', $to), $this->getValueByPath($this->data, $this->getCleanTagValue(array_values($tags)[0])));
 	}
 

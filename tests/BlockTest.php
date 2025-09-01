@@ -5,29 +5,29 @@ use PHPUnit\Framework\TestCase;
 use Julien\Substrat\Substrat;
 
 function normalizeHtmlWhitespace(string $html): string {
-    // Remove whitespace between tags
-    $html = preg_replace('/>\s+</', '><', $html);
+	// Remove whitespace between tags
+	$html = preg_replace('/>\s+</', '><', $html);
 
-    // Remove whitespace right after an opening tag
-    $html = preg_replace('/>\s+([^<])/', '>$1', $html);
+	// Remove whitespace right after an opening tag
+	$html = preg_replace('/>\s+([^<])/', '>$1', $html);
 
-    // Remove whitespace right before a closing tag
-    $html = preg_replace('/([^>])\s+</', '$1<', $html);
+	// Remove whitespace right before a closing tag
+	$html = preg_replace('/([^>])\s+</', '$1<', $html);
 
-    return trim($html);
+	return trim($html);
 }
 
 
 class BlockTest extends TestCase
 {
-  protected $template, $content;
+	protected $template, $content;
 
 	function setup():void {
 		$this->template = "
 			<div>
-			  {{ test.test.pass }}
+				{{ test.test.pass }}
 			</div>
-    ";
+		";
 		$this->content = [
 			"test" => [
 				"test"=>[

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,14 +20,14 @@ function normalizeHtmlWhitespace(string $html): string {
 
 class BlockTest extends TestCase
 {
-  protected $template;
-  protected $content;
+  protected $template, $content;
+
 	function setup():void {
 		$this->template = "
 			<div>
 			  {{ test.test.pass }}
 			</div>
-";
+    ";
 		$this->content = [
 			"test" => [
 				"test"=>[
@@ -45,8 +45,9 @@ class BlockTest extends TestCase
 		);
 
 		$this->assertEquals(
-			normalizeHtmlWhitespace("<div>
-			   Pass
+			normalizeHtmlWhitespace("
+			 <div>
+				 Pass
 			 </div>"),
 			normalizeHtmlWhitespace($substrat->replaceAll())
 		);

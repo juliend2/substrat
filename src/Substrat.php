@@ -18,8 +18,44 @@ class Substrat {
     }
 		// TODO: validate format
     list($from, $to) = explode('-', array_keys($tags)[0]);
-		return $this->replaceRange($this->template, explode(':', $from), explode(':', $to), $this->data['test']['test']['pass']);
+		return $this->replaceRange($this->template, explode(':', $from), explode(':', $to), $this->getValueByPath($this->data, $this->getCleanTagValue(array_values($tags)[0])));
 	}
+
+	protected function getCleanTagValue($tag) {
+		$trimmed_from_brakets = rtrim(ltrim($tag, '{'), '}');
+		return trim($trimmed_from_brakets);
+	}
+
+	protected function getValueByPath(array $data, string $path): mixed {
+		$segments = explode('.', $path);
+		return $this->getValueBySegments($data, $segments);
+	}
+
+	protected function getValueBySegments(array $data, array $segments): mixed {
+		if (empty($segments)) {
+			return $data; // reached the end of the path
+		}
+
+		$key = array_shift($segments);
+
+		if (!array_key_exists($key, $data)) {
+			return null; // path not found
+		}
+
+		$value = $data[$key];
+
+		if (empty($segments)) {
+			return $value; // last segment
+		}
+
+		// If next step requires going deeper but $value is not an array → fail
+		if (!is_array($value)) {
+			return null;
+		}
+
+		return $this->getValueBySegments($value, $segments);
+	}
+
 
 	protected function replaceRange(string $template, array $fromLocation, array $toLocation, mixed $replacement): string {
 		$replacementStr = (string) $replacement;

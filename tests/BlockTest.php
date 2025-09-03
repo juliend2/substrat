@@ -20,17 +20,10 @@ function normalizeHtmlWhitespace(string $html): string {
 
 class BlockTest extends TestCase
 {
-	protected $template, $content;
+	protected $template;
 
 	function setup():void {
 		$this->template = "";
-		$this->content = [
-			"test" => [
-				"test"=>[
-					"pass"=>"Pass"
-				]
-			]
-		];
 	}
 
 	function testOneBlockReplacement()
@@ -84,6 +77,38 @@ class BlockTest extends TestCase
 			normalizeHtmlWhitespace("
 			 <div>
 				 One<br>Two
+			 </div>"),
+			normalizeHtmlWhitespace($substrat->replaceAll())
+		);
+	}
+
+	function testThreeBlockReplacements()
+	{
+		$substrat = new Substrat(
+			"
+			<div>
+				{{ test.test.one }}
+				<br>
+				{{ test.test.two }}
+				<br>
+				{{ test.test.three }}
+			</div>
+			",
+			[
+				"test" => [
+					"test"=>[
+						"one"=>"One",
+						"two"=>"Two",
+						"three"=>"Three",
+					]
+				]
+			]
+		);
+
+		$this->assertEquals(
+			normalizeHtmlWhitespace("
+			 <div>
+				 One<br>Two<br>Three
 			 </div>"),
 			normalizeHtmlWhitespace($substrat->replaceAll())
 		);

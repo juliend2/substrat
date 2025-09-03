@@ -11,16 +11,40 @@ class Substrat {
 		$this->data = $data;
 	}
 
-	public function replaceAll() {
-		$tags = $this->extractTags($this->template);
+	public function replaceAll(): string {
+		$template = $this->template;
+		$upperbound = 0;
+		do {
+			$tags = $this->extractTags($template);
+			if (count($tags)) {
+				$template = $this->replace(
+					$template,
+					$tags
+				);
+			}
+			$upperbound += 1;
+		}
+		while (count($tags) && $upperbound < 10);
+		return $template;
+	}
+
+	public function replace(string $template, $tags): string {
 		if (empty($tags)) {
 			throw new \Exception("No tag found in template.");
 		}
 		list($from, $to) = explode('-', array_keys($tags)[0]);
 		if (is_null($to)) {
-			throw new \Exception("Invalid character range");
+			throw new \Exception("Invalid character range: ".var_export($tags, true));
 		}
-		return $this->replaceRange($this->template, explode(':', $from), explode(':', $to), $this->getValueByPath($this->data, $this->getCleanTagValue(array_values($tags)[0])));
+		return $this->replaceRange(
+			$template, 
+			explode(':', $from), 
+			explode(':', $to), 
+			$this->getValueByPath(
+				$this->data, 
+				$this->getCleanTagValue(array_values($tags)[0])
+			)
+		);
 	}
 
 	protected function getCleanTagValue($tag) {

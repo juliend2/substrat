@@ -2,7 +2,10 @@
 
 namespace Julien\Substrat;
 
+
 class Substrat {
+
+	const MAX_TAGS_PER_TEMPLATE = 200;
 	protected $template;
 	protected $data;
 
@@ -17,22 +20,29 @@ class Substrat {
 		do {
 			$tags = $this->extractTags($template);
 			if (count($tags)) {
-				$template = $this->replace(
+				$template = $this->replaceString(
 					$template,
 					$tags
 				);
 			}
 			$upperbound += 1;
 		}
-		while (count($tags) && $upperbound < 10);
+		while (count($tags) && $upperbound < self::MAX_TAGS_PER_TEMPLATE);
 		return $template;
 	}
 
-	public function replace(string $template, $tags): string {
+	protected function getFirstKeyValue(array $map) {
+		$key = array_keys($map)[0];
+		$value = array_values($map)[0];
+		return [$key, $value];
+	}
+
+	protected function replaceString(string $template, $tags): string {
+		list($key, $value)=$this->getFirstKeyValue($tags);
 		if (empty($tags)) {
 			throw new \Exception("No tag found in template.");
 		}
-		list($from, $to) = explode('-', array_keys($tags)[0]);
+		list($from, $to) = explode('-', $key);
 		if (is_null($to)) {
 			throw new \Exception("Invalid character range: ".var_export($tags, true));
 		}
@@ -42,7 +52,7 @@ class Substrat {
 			explode(':', $to), 
 			$this->getValueByPath(
 				$this->data, 
-				$this->getCleanTagValue(array_values($tags)[0])
+				$this->getCleanTagValue($value)
 			)
 		);
 	}
@@ -152,3 +162,56 @@ class Substrat {
 	}
 
 }
+
+/*
+	protected function replaceSubTemplate(string $template, $tags): string {
+		list($key, $value)=$this->getFirstKeyValue($tags);
+
+		list($subTemplate,$value)= explode("|", $value);
+		$tagVal= $this->getCleanTagValue($value);
+		$subTemplate=$this->getCleanTagValue($subTemplate);
+		// detect global variable:
+		if (!function_exists($subTemplate)) {
+			throw new \Exception(
+				"Found no global variable with name '$subTemplate'.");
+		}
+
+		if (empty($tags)) {
+			throw new \Exception("No tag found in template.");
+		}
+
+		$values = $this->getValueByPath($this->data, $tagVal);
+		if (!is_array($values)) {
+			throw new \InvalidArgumentException("'$tagVal' is expected to be an array.");
+		}
+		$html ="";
+		foreach ($values as $k=>$val) {
+			echo "kv:";
+			var_dump($k, $val);
+			list($from, $to) = explode('-', $key);
+			echo "from to ";
+			var_dump($from, $to);
+			if (is_null($to)) {
+				throw new \Exception("Invalid character range: ".var_export($tags, true));
+			}
+			var_dump($k);
+			var_dump($this->getValueByPath(
+					$this->data, 
+					$tagVal
+				));
+			var_dump($tagVal);
+			var_dump($val);
+			var_dump($val[$tagVal]);
+			$html.= $this->replaceRange(
+				$subTemplate(), 
+				explode(':', $from), 
+				explode(':', $to), 
+				$this->getValueByPath(
+					$this->data, 
+					$tagVal
+				)[$k]
+			);
+		}
+		return $html;
+	}
+ */

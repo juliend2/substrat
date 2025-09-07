@@ -26,6 +26,58 @@ class BlockTest extends TestCase
 		$this->template = "";
 	}
 
+	function testPassingNonIterableToSubTemplate() {
+		function sTemplate(){ return "{{name}}"; }
+		$substrat = new Substrat( 
+			" <div> {{ sTemplate|test.people }} </div> ",
+			[
+			"test" => [
+				"value"=>[
+					"not an array"
+				]
+			]
+			]
+		);
+		$this->expectException(InvalidArgumentException::class);
+		$substrat->replaceAll();
+	}
+
+	function testSubTemplate()
+	{
+		function subTemplate() {
+			return "
+				<p>
+					{{ name }}
+				</p>
+			";
+		}
+		// It will choose the sub-template 
+		// based on the variable name (subTemplate):
+		$substrat = new Substrat(
+			"
+			<div>
+				{{ subTemplate|test.people }}
+			</div>
+			",
+			[
+			"test" => [
+				"people"=>[
+					[ "name"=>"bob" ]
+				]
+			]
+			]
+		);
+
+		$this->assertEquals(
+			normalizeHtmlWhitespace("
+			 <div>
+				 <p>bob</p>
+			 </div>"),
+			normalizeHtmlWhitespace($substrat->replaceAll())
+		);
+
+	}
+
 	function testOneBlockReplacement()
 	{
 		$substrat = new Substrat(

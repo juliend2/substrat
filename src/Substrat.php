@@ -14,6 +14,11 @@ class Substrat {
     $this->data = $data;
   }
 
+  /*
+   * Main method being called
+   *
+   * @return string of the template, with its tags replaced.
+   */
   public function replaceAll(): string {
     $template = $this->template;
     $upperbound = 0;
@@ -31,13 +36,20 @@ class Substrat {
     return $template;
   }
 
-
-  protected function getFirstKeyValue(array $map) {
+  /*
+   * @param array $map the key-value array
+   *
+   * @return mixed The value being first in the array
+   */
+  protected function getFirstKeyValue(array $map): mixed {
     $key = array_keys($map)[0];
     $value = array_values($map)[0];
     return [$key, $value];
   }
 
+  /*
+   * Replaces tags from template
+   */
   protected function replaceString(string $template, $tags): string {
     list($pos, $tag)=$this->getFirstKeyValue($tags);
     if (empty($tags)) {
@@ -51,27 +63,50 @@ class Substrat {
     }
 
     $replacementValue =$this->getValueByPath(
-      $this->data, 
+      $this->data,
       $this->getCleanTagValue($tag)
     );
     return $this->replaceRange(
-      $template, 
-      explode(':', $from), 
-      explode(':', $to), 
+      $template,
+      explode(':', $from),
+      explode(':', $to),
       $replacementValue
     );
   }
 
-  protected function getCleanTagValue($tag) {
+  /*
+   * Removes the '{{' and '}}' surrounding a value that can be found inside a
+   * tag.
+   *
+   * @param string $tag
+   *
+   * @return string without the '{' and '}' characters
+   */
+  protected function getCleanTagValue(string $tag): string {
     $trimmed_from_brakets = rtrim(ltrim($tag, '{'), '}');
     return trim($trimmed_from_brakets);
   }
 
+  /**
+   * @param array $data
+   * @param string $path the dot notation to get to a value in an array ($data)
+   *
+   * @return mixed being the value that can be held into $data
+   */
   protected function getValueByPath(array $data, string $path): mixed {
     $segments = explode('.', $path);
     return $this->getValueBySegments($data, $segments);
   }
 
+  /*
+   *
+   * @param array $data
+   * @param array $segments
+   * What is a segment?
+   * A segment is the array notation that leads to a value inside a given array.
+   *
+   * @return mixed being the value that can be held into $data
+   */
   protected function getValueBySegments(array $data, array $segments): mixed {
     if (empty($segments)) {
       return $data; // reached the end of the path
@@ -99,8 +134,17 @@ class Substrat {
 
 
   /*
-   * @param $template string
-   * @param $fromLocation array
+   * A range look like this: %d:%d-%d:%d
+   * Where %d:%d is line:column.
+   *
+   * @param string $template
+   * @param array $fromLocation
+   * 		line:column from where it starts, and
+   * @param array $toLocation
+   * 		line:column to where it ends.
+   * @param string $replacement
+   *
+   * @return string with the replaced content in it.
    *
    */
   protected function replaceRange(string $template, array $fromLocation, array $toLocation, mixed $replacement): string {
@@ -146,6 +190,13 @@ class Substrat {
     return implode("\n", $lines);
   }
 
+  /*
+   * @param string $html
+   *
+   * @return array The tags from $html and returns an array that looks like:
+   *	'<fromline>:<fromcol>-<toline>:<tocol>' => <any value>
+   *
+   */
   protected function extractTags(string $html): array {
     $tags = [];
     $lines = preg_split('/\r\n|\r|\n/', $html);
@@ -206,18 +257,18 @@ class Substrat {
       }
       var_dump($k);
       var_dump($this->getValueByPath(
-          $this->data, 
+          $this->data,
           $tagVal
         ));
       var_dump($tagVal);
       var_dump($val);
       var_dump($val[$tagVal]);
       $html.= $this->replaceRange(
-        $subTemplate(), 
-        explode(':', $from), 
-        explode(':', $to), 
+        $subTemplate(),
+        explode(':', $from),
+        explode(':', $to),
         $this->getValueByPath(
-          $this->data, 
+          $this->data,
           $tagVal
         )[$k]
       );

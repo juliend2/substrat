@@ -12,6 +12,6 @@ trim_trailing_whitespace = true
 
 # PHP files
 [*.php]
-indent_style = tab
-indent_size = tab
+indent_style = space
+indent_size = 2
 

@@ -28,8 +28,8 @@ class BlockTest extends TestCase
 
 	function testPassingNonIterableToSubTemplate() {
 		function sTemplate(){ return "{{name}}"; }
-		$substrat = new Substrat( 
-			" <div> {{ sTemplate|test.people }} </div> ",
+		$substrat = new Substrat(
+			"<div>{{ sTemplate|test.people }}</div>",
 			[
 			"test" => [
 				"value"=>[
@@ -51,7 +51,7 @@ class BlockTest extends TestCase
 				</p>
 			";
 		}
-		// It will choose the sub-template 
+		// It will choose the sub-template
 		// based on the variable name (subTemplate):
 		$substrat = new Substrat(
 			"

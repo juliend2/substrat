@@ -62,6 +62,18 @@ class Substrat {
       throw new \Exception("Invalid character range: ".var_export($tags, true));
     }
 
+    if (str_contains($tag, "|")) {
+      print $tag."\n";
+      list($subFn, $subTag)=explode("|", $this->getCleanTagValue($tag));
+      var_dump(function_exists($subFn));
+      var_dump($subFn, $subTag);
+      if (!function_exists($subFn)) {
+        throw new \Exception("No sub-function named '$subFn'.");
+      }
+
+    }
+    // @TODO: ca va etre ici que je vais faire une condition
+    // speciale pour le cas du subtemplate function.
     $replacementValue =$this->getValueByPath(
       $this->data,
       $this->getCleanTagValue($tag)

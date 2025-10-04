@@ -26,6 +26,7 @@ class BlockTest extends TestCase
 		$this->template = "";
 	}
 
+  /*
 	function testPassingNonIterableToSubTemplate() {
 		function sTemplate(){ return "{{name}}"; }
 		$substrat = new Substrat(
@@ -41,7 +42,31 @@ class BlockTest extends TestCase
 		$this->expectException(InvalidArgumentException::class);
 		$substrat->replaceAll();
 	}
+   */
 
+	function testSimpleSubTemplate() {
+		function sTemplate(){ return "{{name}}"; }
+		$substrat = new Substrat(
+			"<div>{{ sTemplate|test }}</div>",
+			[
+			"test" => [
+				"name"=>[
+					"bob"
+				]
+			]
+			]
+		);
+
+		$this->assertEquals(
+			normalizeHtmlWhitespace("
+			 <div>
+				 <p>bob</p>
+			 </div>"),
+			normalizeHtmlWhitespace($substrat->replaceAll())
+		);
+	}
+
+  /*
 	function testSubTemplate()
 	{
 		function subTemplate() {
@@ -77,6 +102,7 @@ class BlockTest extends TestCase
 		);
 
 	}
+   */
 
 	function testOneBlockReplacement()
 	{

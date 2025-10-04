@@ -26,33 +26,30 @@ class BlockTest extends TestCase
 		$this->template = "";
 	}
 
-  /*
-	function testPassingNonIterableToSubTemplate() {
-		function sTemplate(){ return "{{name}}"; }
-		$substrat = new Substrat(
-			"<div>{{ sTemplate|test.people }}</div>",
-			[
-			"test" => [
-				"value"=>[
-					"not an array"
-				]
-			]
-			]
-		);
-		$this->expectException(InvalidArgumentException::class);
-		$substrat->replaceAll();
-	}
-   */
+	// function testPassingNonIterableToSubTemplate() {
+	// 	function ssTemplate(){ return "{{name}}"; }
+	// 	$substrat = new Substrat(
+	// 		"<div>{{ ssTemplate|test.people }}</div>",
+	// 		[
+	// 		"test" => [
+	// 			"value"=>[
+	// 				"not an array"
+	// 			]
+	// 		]
+	// 		]
+	// 	);
+	// 	$this->expectException(InvalidArgumentException::class);
+	// 	$substrat->replaceAll();
+	// }
+
 
 	function testSimpleSubTemplate() {
-		function sTemplate(){ return "{{name}}"; }
+		function sTemplate(){ return "<p>{{name}}</p>"; }
 		$substrat = new Substrat(
 			"<div>{{ sTemplate|test }}</div>",
 			[
 			"test" => [
-				"name"=>[
-					"bob"
-				]
+				"name"=>"bob"
 			]
 			]
 		);

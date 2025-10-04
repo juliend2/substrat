@@ -63,21 +63,18 @@ class Substrat {
     }
 
     if (str_contains($tag, "|")) {
-      print $tag."\n";
       list($subFn, $subTag)=explode("|", $this->getCleanTagValue($tag));
-      var_dump(function_exists($subFn));
-      var_dump($subFn, $subTag);
       if (!function_exists($subFn)) {
         throw new \Exception("No sub-function named '$subFn'.");
       }
-
+      $sub_substrat = new static($subFn(), $this->getValueByPath($this->data, $subTag));
+      $replacementValue = $sub_substrat->replaceAll();
+    } else {
+      $replacementValue = $this->getValueByPath(
+        $this->data,
+        $this->getCleanTagValue($tag)
+      );
     }
-    // @TODO: ca va etre ici que je vais faire une condition
-    // speciale pour le cas du subtemplate function.
-    $replacementValue =$this->getValueByPath(
-      $this->data,
-      $this->getCleanTagValue($tag)
-    );
     return $this->replaceRange(
       $template,
       explode(':', $from),
